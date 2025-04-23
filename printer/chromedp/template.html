@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Custom HTML PDF</title>
+    <style>
+        .bg-grey {background-color: gainsboro;}
+        .font-bold {font-weight: 700;}
+        .header {
+          display: flex;
+          justify-content: space-between;
+          font-family: Arial, sans-serif;
+          font-size: 16pt;
+          margin-bottom: 10px;
+        }
+
+       .info-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-family: Arial, sans-serif;
+          font-size: 11pt;
+        }
+       .info-table td {
+          padding-left: -10px;
+          vertical-align: top;
+        }
+        .info-table td {
+           border: 10px solid white;
+        }
+
+        .time-table {
+           width: 100%;
+           border-collapse: collapse;
+           font-family: Arial, sans-serif;
+           font-size: 10pt;
+           border: solid 1px black;
+           text-align:center;
+         }
+        .time-table td {
+           border: solid 1px black;
+           height: 20px;
+         }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>Aufzeichung Arbeitszeiten § 17 Abs. 1 Mindestlohngesetz</div>
+        <div class="font-bold">{{.Month}}</div>
+    </div>
+    <table class="info-table">
+        <tr>
+            <td style="width:15%">Firmen-Nr.</td>
+            <td style="width:15%">Bezeichnung</td>
+            <td class="bg-grey font-bold" style="width:10%; text-align:right;">2282</td>
+            <td class="bg-grey">Voltaik Check OHG</td>
+        </tr>
+        <tr>
+            <td>Personal-Nr.</td>
+            <td>Name, Vorname</td>
+            <td class="bg-grey font-bold" style="text-align:right;">{{.PersonalNo}}</td>
+            <td class="bg-grey">{{.Employee}}</td>
+        </tr>
+        <tr>
+            <td colspan="2">Art der Beschäftigung</td>
+            <td colspan="2" class="bg-grey">Beschäftigung gemäß § 2a SchwarzArbG</td>
+        </tr>
+    </table>
+    <table class="time-table">
+        <tr>
+            <td colspan="2">Tag</td>
+            <td colspan="2">Arbeits-</td>
+            <td colspan="6">Pausen usw (nicht in Spalte "Netto-Arbeitszeit" addieren)</td>
+            <td>Netto-</td>
+            <td>Bemerkungen</td>
+        </tr>
+        <tr>
+            <td style="width:30px"></td>
+            <td style="width:30px"></td>
+            <td style="width:60px">beginn</td>
+            <td style="width:60px">ende</td>
+            <td style="width:60px">von</td>
+            <td style="width:60px">bis</td>
+            <td style="width:60px">von</td>
+            <td style="width:60px">bis</td>
+            <td style="width:60px">von</td>
+            <td style="width:60px">bis</td>
+            <td style="width:80px">Arbeitszeit</td>
+            <td></td>
+        </tr>
+        {{range $row := .Rows}}
+            {{if or (eq $row.WeekDay "Sa.") (eq $row.WeekDay "So.") }}
+                <tr class="bg-grey">
+            {{else}}
+                <tr>
+            {{end}}
+                <td class="font-bold">{{$row.Day}}</td>
+                <td>{{$row.WeekDay}}</td>
+                <td>{{$row.Start}}</td>
+                <td>{{$row.End}}</td>
+                <td>{{$row.BreakOneStart}}</td>
+                <td>{{$row.BreakOneEnd}}</td>
+                <td>{{$row.BreakTwoStart}}</td>
+                <td>{{$row.BreakTwoEnd}}</td>
+                <td>{{$row.BreakThreeStart}}</td>
+                <td>{{$row.BreakThreeEnd}}</td>
+                <td>{{$row.Hours}}</td>
+                <td>{{$row.Comment}}</td>
+            </tr>
+        {{end}}
+        <tr>
+            <td class="font-bold" colspan="10" style="text-align:right;">Summe der Netto-Arbeitszeiten</td>
+            <td class="bg-grey">{{.TotalHours}}</td>
+            <td></td>
+        </tr>
+    </table>
+    <div style="display: flex; justify-content: space-between; padding-top: 50px">
+      <div style="border-top: solid 1px black; width:40%">Unterschift der Arbeitsnehmers</div>
+      <div></div>
+      <div style="border-top: solid 1px black; width:40%">Unterschift der Arbeitgebers</div>
+    </div>
+    <div class="font-bold" style="padding-top: 50px; font-size:10pt; text-align: center">
+        Aufbewahrungspflichter Arbeitszeiten-Dokumentationsbeleg — SBS Software GmbH • Pfhorzheimer Str. 46/1 • 75015 Bretten
+    </div>
+</body>

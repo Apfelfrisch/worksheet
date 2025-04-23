@@ -1,0 +1,26 @@
+{
+    "first-name": "Nils",
+    "last-name": "Refle",
+    "personal-no": "38",
+    "company": "Voltaik Check OHG",
+    "company-no": "2282",
+    "workday": {
+        "start": "08:00",
+        "end": "17:00",
+        "breaks": [
+            {
+                "start": "12:00",
+                "end": "13:00"
+            }
+        ]
+    },
+    "holidays": [
+        {
+            "from" : "2025-04-22",
+            "until" : "2025-04-25"
+        },
+        {
+            "from" : "2025-05-08"
+        }
+    ]
+}
