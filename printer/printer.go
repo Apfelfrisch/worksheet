@@ -68,3 +68,34 @@ func MapWeekDay(day time.Weekday) string {
 		panic(fmt.Sprintf("unexpected time.Weekday: %#v", day))
 	}
 }
+
+func MapMonth(month time.Month) string {
+	switch month {
+	case time.January:
+		return "Januar"
+	case time.February:
+		return "Februar"
+	case time.March:
+		return "März"
+	case time.April:
+		return "April"
+	case time.May:
+		return "Mai"
+	case time.June:
+		return "Juni"
+	case time.July:
+		return "Juli"
+	case time.August:
+		return "August"
+	case time.September:
+		return "September"
+	case time.October:
+		return "Oktober"
+	case time.November:
+		return "November"
+	case time.December:
+		return "Dezember"
+	default:
+		panic(fmt.Sprintf("unexpected time.Month: %#v", month))
+	}
+}

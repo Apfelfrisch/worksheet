@@ -51,21 +51,14 @@ func (e Employee) PrintSheet(year int, month time.Month, buf io.Writer) {
 			row[2] = day.Duration.Start.String()
 			row[3] = day.Duration.End.String()
 			row[4] = strconv.FormatFloat(day.Hours(), 'f', 2, 64)
-
-			if len(day.Breaks) == 1 {
-				row[5] = day.Breaks[0].Start.String()
-				row[6] = day.Breaks[0].End.String()
-			}
-			if len(day.Breaks) == 2 {
-				row[7] = day.Breaks[1].Start.String()
-				row[8] = day.Breaks[1].End.String()
-			}
-			if len(day.Breaks) >= 3 {
-				row[9] = day.Breaks[2].Start.String()
-				row[10] = day.Breaks[2].End.String()
-			}
 		}
-		if day.Type == DayTypeHoliday {
+
+		if day.Type == DayTypeWeekday {
+			for i, b := range day.Breaks {
+				row[i+5] = b.Start.String()
+				row[i+6] = b.End.String()
+			}
+		} else if day.Type == DayTypeHoliday {
 			row[11] = "Urlaub"
 		} else if day.Type == DayTypeFeast {
 			row[11] = holidayMap(day.Date.Year())[day.Date]
@@ -78,7 +71,7 @@ func (e Employee) PrintSheet(year int, month time.Month, buf io.Writer) {
 		CompanyNo:  e.CompanyNo,
 		PersonalNo: e.PersonalNo,
 		Employee:   e.LastName + ", " + e.FirstName,
-		Month:      month.String() + " " + strconv.Itoa(year),
+		Month:      printer.MapMonth(month) + " " + strconv.Itoa(year),
 		TotalHours: strconv.FormatFloat(workMonth.TotalHours(), 'f', 2, 64),
 		Rows:       rows,
 	}, buf)
@@ -96,20 +89,21 @@ func (e Employee) DaysInMonth(year int, month time.Month) WorkMonth {
 			continue
 		}
 
-		if _, isFeast := feastdays[d.Truncate(24*time.Hour)]; isFeast {
-			days = append(days, Day{Date: d, Type: DayTypeFeast})
-			continue
-		}
+		midnight := d.Truncate(24 * time.Hour)
 
-		if _, isHoliday := e.Holidays[d.Truncate(24*time.Hour)]; isHoliday {
-			days = append(days, Day{Date: d, Type: DayTypeHoliday})
-			continue
+		var dType DayType
+		if _, isFeast := feastdays[midnight]; isFeast {
+			dType = DayTypeFeast
+		} else if _, isHoliday := e.Holidays[midnight]; isHoliday {
+			dType = DayTypeHoliday
+		} else {
+			dType = DayTypeWeekday
 		}
 
 		for _, workBreak := range e.Breaks {
 			days = append(days, Day{
 				Date:     d,
-				Type:     DayTypeWeekday,
+				Type:     dType,
 				Duration: e.Workday,
 				Breaks:   []DailyPeriod{workBreak},
 			})
